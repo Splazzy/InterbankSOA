@@ -9,7 +9,7 @@ namespace InterbankSOA.API.Repositories
         Task<bool> EmailExistsAsync(string email);
         Task<bool> DniExistsAsync(string dni);
         Task<bool> UsuarioDigitalExistsAsync(string usuarioDigital);
-        Task<Usuario?> GetByEmailAndPasswordAsync(string email, string claveHash);
+        Task<Usuario?> GetByEmailAsync(string email);
         Task<Sesion> AddSesionAsync(Sesion sesion);
     }
 }

@@ -39,10 +39,10 @@ namespace InterbankSOA.API.Repositories
             return await _context.Usuarios.AnyAsync(u => u.UsuarioDigital == usuarioDigital);
         }
 
-        public async Task<Usuario?> GetByEmailAndPasswordAsync(string email, string claveHash)
+        public async Task<Usuario?> GetByEmailAsync(string email)
         {
             return await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Email == email && u.ClaveHash == claveHash);
+                .FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<Sesion> AddSesionAsync(Sesion sesion)

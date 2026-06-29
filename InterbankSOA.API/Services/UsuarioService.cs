@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using InterbankSOA.API.DTOs;
 using InterbankSOA.API.Models;
 using InterbankSOA.API.Repositories;
@@ -60,7 +61,7 @@ namespace InterbankSOA.API.Services
                 ApellidoMaterno = usuarioDto.ApellidoMaterno,
                 Email = usuarioDto.Email,
                 Celular = usuarioDto.Celular,
-                ClaveHash = usuarioDto.ClaveHash,
+                ClaveHash = HashPassword(usuarioDto.ClaveHash),
 
                 // --- CAMPOS INTERNOS ASIGNADOS AUTOMÁTICAMENTE ---
                 FechaRegistro = DateTime.UtcNow,
@@ -99,8 +100,8 @@ namespace InterbankSOA.API.Services
 
         public async Task<string> LoginAsync(LoginRequestDTO loginDto)
         {
-            var usuario = await _usuarioRepository.GetByEmailAndPasswordAsync(loginDto.Email, loginDto.ClaveHash);
-            if (usuario == null)
+            var usuario = await _usuarioRepository.GetByEmailAsync(loginDto.Email);
+            if (usuario == null || !VerifyPassword(loginDto.ClaveHash, usuario.ClaveHash))
             {
                 throw new InvalidOperationException("Email o contraseña incorrectos.");
             }
@@ -120,7 +121,50 @@ namespace InterbankSOA.API.Services
 
             return $"Bienvenido a la banca movil interbank, {usuario.Nombre}!";
         }
-    private static string GenerateRandomCreditCardNumber()
+
+        private static string HashPassword(string password)
+        {
+            const int iterations = 100_000;
+            const int saltSize = 16;
+            const int hashSize = 32;
+
+            var salt = RandomNumberGenerator.GetBytes(saltSize);
+            var hash = Rfc2898DeriveBytes.Pbkdf2(
+                password,
+                salt,
+                iterations,
+                HashAlgorithmName.SHA256,
+                hashSize);
+
+            return $"{iterations}.{Convert.ToBase64String(salt)}.{Convert.ToBase64String(hash)}";
+        }
+
+        private static bool VerifyPassword(string password, string storedHash)
+        {
+            var parts = storedHash.Split('.', 3);
+            if (parts.Length != 3)
+            {
+                return false;
+            }
+
+            if (!int.TryParse(parts[0], out var iterations))
+            {
+                return false;
+            }
+
+            var salt = Convert.FromBase64String(parts[1]);
+            var expectedHash = Convert.FromBase64String(parts[2]);
+            var computedHash = Rfc2898DeriveBytes.Pbkdf2(
+                password,
+                salt,
+                iterations,
+                HashAlgorithmName.SHA256,
+                expectedHash.Length);
+
+            return CryptographicOperations.FixedTimeEquals(expectedHash, computedHash);
+        }
+
+        private static string GenerateRandomCreditCardNumber()
     {
         var bin = new[] { "4539", "4556", "4916", "4024", "5204", "5300" };
         var prefix = bin[Random.Shared.Next(bin.Length)];
