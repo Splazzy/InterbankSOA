@@ -1,0 +1,39 @@
+# Visual Studio temporary files, build results, and
+# user-specific files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build artifacts
+bin/
+obj/
+**/bin/
+**/obj/
+
+# Rider
+.idea/
+*.sln.iml
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# NuGet
+*.nupkg
+packages/
+# Uncomment if necessary
+#project.lock.json
+#project.fragment.lock.json
+
+# Publish outputs
+wwwroot/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
