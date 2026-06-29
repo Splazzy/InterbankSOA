@@ -59,6 +59,46 @@ dotnet run --project InterbankSOA.API/InterbankSOA.API.csproj
 
 - Accede a la documentación en `http://localhost:5131/swagger/index.html` después de iniciar el proyecto.
 
+## SQL compartido
+
+Para que todos los colaboradores usen la misma base de datos y compartan los datos generados:
+
+1. Crea un servidor SQL accesible desde todas las máquinas del equipo.
+   - Puede ser un SQL Server en red local, una VM, o un servicio en la nube como Azure SQL.
+2. Crea la base de datos `InterbankSOA` en ese servidor.
+3. Usa una cadena de conexión compartida.
+
+Ejemplo para Azure SQL:
+
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=tcp:mi-servidor.database.windows.net,1433;Initial Catalog=InterbankSOA;Persist Security Info=False;User ID=miUsuario;Password=miPassword;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+}
+```
+
+Ejemplo para SQL Server en red local:
+
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=SERVIDOR_COMPARTIDO;Database=InterbankSOA;User Id=miUsuario;Password=miPassword;TrustServerCertificate=True;"
+}
+```
+
+### Recomendada: no guardar credenciales en el repositorio
+
+- No subas la contraseña ni la cadena real a GitHub.
+- Usa `appsettings.Development.json` sólo localmente o mejor usa `dotnet user-secrets`.
+
+Ejemplo con user secrets:
+
+```bash
+dotnet user-secrets init --project InterbankSOA.API/InterbankSOA.API.csproj
+
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=SERVIDOR_COMPARTIDO;Database=InterbankSOA;User Id=miUsuario;Password=miPassword;TrustServerCertificate=True;"
+```
+
+El proyecto ya está configurado en `Program.cs` para leer `DefaultConnection` desde la configuración, así que basta con tener la cadena de conexión definida en el entorno local de cada colaborador.
+
 ## Colaboración
 
 - Clonar: `git clone https://github.com/Splazzy/InterbankSOA.git`
