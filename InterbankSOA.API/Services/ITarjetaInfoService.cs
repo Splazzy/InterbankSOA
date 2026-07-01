@@ -6,5 +6,6 @@ namespace InterbankSOA.API.Services
     {
         TarjetaDetalleDTO? GetTarjetaDetalle(int idTarjeta);
         TarjetaMovimientosResponseDTO? GetTarjetaMovimientos(int idTarjeta);
+        VerDatosTarjetaResponseDTO? GetDatosTarjeta(int idTarjeta, string sessionToken, string claveDinamica);
     }
 }

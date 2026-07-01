@@ -87,5 +87,37 @@ namespace InterbankSOA.API.Services
                 Movimientos = tarjetaMovimientos
             };
         }
+
+        public VerDatosTarjetaResponseDTO? GetDatosTarjeta(int idTarjeta, string sessionToken, string claveDinamica)
+        {
+            if (string.IsNullOrEmpty(sessionToken))
+                return null;
+
+            var sesion = _context.Sesions
+                .AsNoTracking()
+                .FirstOrDefault(s => s.TokenHash == sessionToken && s.EstadoActivo == true);
+
+            if (sesion == null || sesion.FechaExpiracion < DateTime.Now)
+                return null;
+
+            var tarjeta = _context.TarjetaCreditos
+                .AsNoTracking()
+                .FirstOrDefault(t => t.IdTarjeta == idTarjeta && t.IdUsuario == sesion.IdUsuario);
+
+            if (tarjeta == null)
+                return null;
+
+            if (string.IsNullOrEmpty(claveDinamica) || tarjeta.CvvDinamico != claveDinamica)
+                return null;
+
+            return new VerDatosTarjetaResponseDTO
+            {
+                IdTarjeta = tarjeta.IdTarjeta,
+                NumeroTarjeta = tarjeta.NumeroEnmascarado,
+                FechaVencimiento = tarjeta.FechaVencimiento,
+                CvvDinamico = tarjeta.CvvDinamico,
+                EstadoTarjeta = tarjeta.EstadoActivo
+            };
+        }
     }
 }
