@@ -17,18 +17,19 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<ITarjetaService, TarjetaService>();
+builder.Services.AddScoped<ITarjetaInfoService, TarjetaInfoService>();
 builder.Services.AddScoped<IPlinService, PlinService>();
 
 var app = builder.Build();
 
 // Configuración del pipeline HTTP
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+// Swagger como página de inicio
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 // Mapear los controladores
 app.MapControllers();
