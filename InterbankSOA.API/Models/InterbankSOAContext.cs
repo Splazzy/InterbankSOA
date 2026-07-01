@@ -49,7 +49,7 @@ public partial class InterbankSOAContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Server=DESKTOP-7MT9MK7;Database=InterbankSOA;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=localhost;Database=InterbankSOA;Trusted_Connection=True;TrustServerCertificate=True;");
         }
     }
 

@@ -16,6 +16,8 @@ builder.Services.AddControllers();
 // Registro de Repositorios y Servicios
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ITarjetaService, TarjetaService>();
+builder.Services.AddScoped<IPlinService, PlinService>();
 
 var app = builder.Build();
 
